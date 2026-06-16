@@ -11,11 +11,9 @@ pub fn main(init: std.process.Init) !void {
     try stdout.writeAll("Starting spinners \n");
     try stdout.flush();
 
-    try Spinner(io, stdout, .arc, "Arc...");
     try Spinner(io, stdout, .wave, "Wave...");
     try Spinner(io, stdout, .train, "Train...");
     try Spinner(io, stdout, .bouncing_ball, "Bouncing Ball...");
-    try Spinner(io, stdout, .braille, "Braille...");
     try Spinner(io, stdout, .clock, "Clock...");
 
     try stdout.writeAll("All done 🫠!\n");
@@ -23,7 +21,7 @@ pub fn main(init: std.process.Init) !void {
 }
 
 fn Spinner(io: std.Io, stdout: *std.Io.Writer, style: spinner.SpinnerStyle, msg: []const u8) !void {
-    var classic = spinner.Spinner.init(io, stdout, 150, style, msg);
+    var classic = spinner.Spinner.init(io, stdout, 120, style, msg);
 
     try classic.start();
     try io.sleep(.fromSeconds(2), .awake);
