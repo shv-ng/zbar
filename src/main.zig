@@ -1,61 +1,41 @@
 const std = @import("std");
-const Io = std.Io;
-
-const zbar = @import("zbar");
+const spinner = @import("spinner.zig");
 
 pub fn main(init: std.process.Init) !void {
-    std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
-
-    const arena: std.mem.Allocator = init.arena.allocator();
-
-    const args = try init.minimal.args.toSlice(arena);
-    for (args) |arg| {
-        std.log.info("arg: {s}", .{arg});
-    }
-
     const io = init.io;
 
-    var stdout_buffer: [1024]u8 = undefined;
-    var stdout_file_writer: Io.File.Writer = .init(.stdout(), io, &stdout_buffer);
-    const stdout_writer = &stdout_file_writer.interface;
+    var buf: [1024]u8 = undefined;
+    var stdout_writer = std.Io.File.stdout().writer(io, &buf);
+    const stdout = &stdout_writer.interface;
 
-    try zbar.printAnotherMessage(stdout_writer);
+    try stdout.writeAll("Starting spinners \n");
+    try stdout.flush();
 
+    try stdout.writeAll("Classic spinners:\n");
+    try classicSpinner(io, stdout);
+
+    try stdout.writeAll("Arc spinners:\n");
+    try arcSpinner(io, stdout);
+
+    try stdout.writeAll("Arc spinners:\n");
+    try arcSpinner(io, stdout);
+
+    try stdout.writeAll("All done🫠!\n");
+    try stdout.flush();
 }
 
-test "simple test" {
-    const gpa = std.testing.allocator;
-    var list: std.ArrayList(i32) = .empty;
-    try list.append(gpa, 42);
-    try std.testing.expectEqual(@as(i32, 42), list.pop());
+fn classicSpinner(io: std.Io, stdout: *std.Io.Writer) !void {
+    var classic = spinner.Spinner.init(io, stdout, 200, .classic, "Loading...");
+
+    try classic.start();
+    try io.sleep(.fromSeconds(2), .awake);
+    try classic.stop();
 }
 
-test "fuzz example" {
-    try std.testing.fuzz({}, testOne, .{});
-}
+fn arcSpinner(io: std.Io, stdout: *std.Io.Writer) !void {
+    var arc = spinner.Spinner.init(io, stdout, 150, .arc, "Loading...");
 
-fn testOne(context: void, smith: *std.testing.Smith) !void {
-    _ = context;
-
-    const gpa = std.testing.allocator;
-    var list: std.ArrayList(u8) = .empty;
-    defer list.deinit(gpa);
-    while (!smith.eos()) switch (smith.value(enum { add_data, dup_data })) {
-        .add_data => {
-            const slice = try list.addManyAsSlice(gpa, smith.value(u4));
-            smith.bytes(slice);
-        },
-        .dup_data => {
-            if (list.items.len == 0) continue;
-            if (list.items.len > std.math.maxInt(u32)) return error.SkipZigTest;
-            const len = smith.valueRangeAtMost(u32, 1, @min(32, list.items.len));
-            const off = smith.valueRangeAtMost(u32, 0, @intCast(list.items.len - len));
-            try list.appendSlice(gpa, list.items[off..][0..len]);
-            try std.testing.expectEqualSlices(
-                u8,
-                list.items[off..][0..len],
-                list.items[list.items.len - len ..],
-            );
-        },
-    };
+    try arc.start();
+    try io.sleep(.fromSeconds(2), .awake);
+    try arc.stop();
 }
