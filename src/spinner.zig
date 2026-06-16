@@ -8,6 +8,10 @@ pub const SpinnerStyle = enum {
     arc,
     braille,
     clock,
+    bouncing_ball,
+    snake,
+    wave,
+    train,
 
     pub fn frames(self: SpinnerStyle) []const []const u8 {
         return switch (self) {
@@ -15,6 +19,10 @@ pub const SpinnerStyle = enum {
             .arc => &.{ "◜", "◠", "◝", "◞", "◡", "◟" },
             .braille => &.{ "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" },
             .clock => &.{ "🕛", "🕐", "🕑", "🕒", "🕓", "🕔", "🕕", "🕖", "🕗", "🕘", "🕙", "🕚" },
+            .bouncing_ball => &.{ "(●    )", "( ●   )", "(   ● )", "(    ●)", "(   ● )", "( ●   )" },
+            .snake => &.{ "▰▱▱▱▱", "▱▰▱▱▱", "▱▱▰▱▱", "▱▱▱▰▱", "▱▱▱▱▰" },
+            .wave => &.{ "▁", "▂", "▃", "▄", "▅", "▆", "▇", "█", "▇", "▆", "▅", "▄", "▃", "▂", "▁", " " },
+            .train => &.{ "══════════", "════════🚂", "══════🚂🚃", "════🚂🚃🚃", "══🚂🚃🚃🚃", "🚂🚃🚃🚃🚃", "🚃🚃🚃🚃══", "🚃🚃🚃════", "🚃🚃══════", "🚃════════", "══════════" },
         };
     }
 };
@@ -37,7 +45,7 @@ pub const Spinner = struct {
             .interval_ms = interval_ms,
             .frames = style.frames(),
             .done = "✓",
-            .thread=undefined,
+            .thread = undefined,
             .running = std.atomic.Value(bool).init(false),
         };
     }

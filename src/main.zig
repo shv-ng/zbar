@@ -11,43 +11,21 @@ pub fn main(init: std.process.Init) !void {
     try stdout.writeAll("Starting spinners \n");
     try stdout.flush();
 
-    try classicSpinner(io, stdout);
-    try arcSpinner(io, stdout);
-    try brailleSpinner(io, stdout);
-    try clockSpinner(io, stdout);
+    try Spinner(io, stdout, .arc, "Arc...");
+    try Spinner(io, stdout, .wave, "Wave...");
+    try Spinner(io, stdout, .train, "Train...");
+    try Spinner(io, stdout, .bouncing_ball, "Bouncing Ball...");
+    try Spinner(io, stdout, .braille, "Braille...");
+    try Spinner(io, stdout, .clock, "Clock...");
 
     try stdout.writeAll("All done 🫠!\n");
     try stdout.flush();
 }
 
-fn classicSpinner(io: std.Io, stdout: *std.Io.Writer) !void {
-    var classic = spinner.Spinner.init(io, stdout, 150, .classic, "Classic Spinner...");
+fn Spinner(io: std.Io, stdout: *std.Io.Writer, style: spinner.SpinnerStyle, msg: []const u8) !void {
+    var classic = spinner.Spinner.init(io, stdout, 150, style, msg);
 
     try classic.start();
     try io.sleep(.fromSeconds(2), .awake);
     try classic.stop();
-}
-
-fn arcSpinner(io: std.Io, stdout: *std.Io.Writer) !void {
-    var arc = spinner.Spinner.init(io, stdout, 150, .arc, "Arc Spinner...");
-
-    try arc.start();
-    try io.sleep(.fromSeconds(2), .awake);
-    try arc.stop();
-}
-
-fn brailleSpinner(io: std.Io, stdout: *std.Io.Writer) !void {
-    var braille = spinner.Spinner.init(io, stdout, 150, .braille, "Braille Spinner...");
-
-    try braille.start();
-    try io.sleep(.fromSeconds(2), .awake);
-    try braille.stop();
-}
-
-fn clockSpinner(io: std.Io, stdout: *std.Io.Writer) !void {
-    var clock = spinner.Spinner.init(io, stdout, 150, .clock, "Clock Spinner...");
-
-    try clock.start();
-    try io.sleep(.fromSeconds(2), .awake);
-    try clock.stop();
 }
